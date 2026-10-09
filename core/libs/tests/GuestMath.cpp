@@ -44,10 +44,10 @@ int APS5_VABI __isnormal_nid_postfix(double);
 int APS5_VABI __isnormalf_nid_postfix(float);
 int APS5_VABI __isinff_nid_postfix(float);
 std::lldiv_t APS5_VABI lldiv_nid_postfix(long long, long long);
-long APS5_VABI labs_nid_postfix(long);
+std::int64_t APS5_VABI labs_nid_postfix(std::int64_t);
 long long APS5_VABI imaxabs_nid_postfix(long long);
 int APS5_VABI ffs_nid_postfix(int);
-int APS5_VABI ffsl_nid_postfix(long);
+int APS5_VABI ffsl_nid_postfix(std::int64_t);
 int APS5_VABI ffsll_nid_postfix(long long);
 }
 static void Require(bool value) { if (!value) std::abort(); }
@@ -147,13 +147,13 @@ static void CheckIntegerConversions() {
 
 static void CheckBitAndAbsoluteValue() {
     Require(labs_nid_postfix(-5) == 5 && labs_nid_postfix(5) == 5 && labs_nid_postfix(0) == 0);
-    Require(labs_nid_postfix(std::numeric_limits<long>::min()) == std::numeric_limits<long>::min());
+    Require(labs_nid_postfix(std::numeric_limits<std::int64_t>::min()) == std::numeric_limits<std::int64_t>::min());
     Require(imaxabs_nid_postfix(-INT64_C(5000000000)) == INT64_C(5000000000));
     Require(imaxabs_nid_postfix(std::numeric_limits<long long>::min()) == std::numeric_limits<long long>::min());
     Require(ffs_nid_postfix(0) == 0 && ffs_nid_postfix(1) == 1 && ffs_nid_postfix(0x50) == 5);
     Require(ffs_nid_postfix(std::numeric_limits<int>::min()) == 32 && ffs_nid_postfix(-1) == 1);
-    Require(ffsl_nid_postfix(0) == 0 && ffsl_nid_postfix(0x100000000L) == 33);
-    Require(ffsl_nid_postfix(std::numeric_limits<long>::min()) == 64);
+    Require(ffsl_nid_postfix(0) == 0 && ffsl_nid_postfix(INT64_C(0x100000000)) == 33);
+    Require(ffsl_nid_postfix(std::numeric_limits<std::int64_t>::min()) == 64);
     Require(ffsll_nid_postfix(0) == 0 && ffsll_nid_postfix(INT64_C(1) << 40) == 41);
     Require(ffsll_nid_postfix(std::numeric_limits<long long>::min()) == 64);
 }
