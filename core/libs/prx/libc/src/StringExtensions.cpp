@@ -73,4 +73,28 @@ char* APS5_VABI strtok_nid_postfix(char* text, const char* delimiters) {
     return strtok_r_nid_postfix(text, delimiters, &state);
 }
 
+char* APS5_VABI strsep_nid_postfix(char** stringp, const char* delimiters) {
+    char* token = *stringp;
+    if (token == nullptr) return nullptr;
+    char* end = token + std::strcspn(token, delimiters);
+    if (*end != '\0') {
+        *end = '\0';
+        *stringp = end + 1;
+    } else {
+        *stringp = nullptr;
+    }
+    return token;
+}
+
+void* APS5_VABI memccpy_nid_postfix(void* destination, const void* source, int stop, std::size_t count) {
+    const auto found = static_cast<const unsigned char*>(std::memchr(source, static_cast<unsigned char>(stop), count));
+    if (found == nullptr) {
+        std::memcpy(destination, source, count);
+        return nullptr;
+    }
+    const auto copied = static_cast<std::size_t>(found - static_cast<const unsigned char*>(source)) + 1;
+    std::memcpy(destination, source, copied);
+    return static_cast<unsigned char*>(destination) + copied;
+}
+
 }
