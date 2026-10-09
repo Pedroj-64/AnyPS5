@@ -1,3 +1,4 @@
+#include <bit>
 #include <mutex>
 #include <cstdint>
 #include <cmath>
@@ -12,6 +13,26 @@ extern "C" {
 
 std::lldiv_t APS5_VABI lldiv_nid_postfix(long long numerator, long long denominator) {
     return std::lldiv(numerator, denominator);
+}
+
+long APS5_VABI labs_nid_postfix(long value) {
+    return value < 0 ? static_cast<long>(0 - static_cast<unsigned long>(value)) : value;
+}
+
+long long APS5_VABI imaxabs_nid_postfix(long long value) {
+    return value < 0 ? static_cast<long long>(0 - static_cast<unsigned long long>(value)) : value;
+}
+
+int APS5_VABI ffs_nid_postfix(int value) {
+    return value == 0 ? 0 : std::countr_zero(static_cast<unsigned int>(value)) + 1;
+}
+
+int APS5_VABI ffsl_nid_postfix(long value) {
+    return value == 0 ? 0 : std::countr_zero(static_cast<unsigned long>(value)) + 1;
+}
+
+int APS5_VABI ffsll_nid_postfix(long long value) {
+    return value == 0 ? 0 : std::countr_zero(static_cast<unsigned long long>(value)) + 1;
 }
 
 float APS5_VABI fmodf_nid_postfix(float x, float y) { return std::fmod(x, y); }
