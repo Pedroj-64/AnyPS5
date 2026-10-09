@@ -1,7 +1,9 @@
 #include "SceTypes.hpp"
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <stdexcept>
+#include <string_view>
 #include <vector>
 
 extern "C" {
@@ -10,6 +12,7 @@ int APS5_VABI scePthreadJoin(Pthread thread, void** retval);
 Pthread APS5_VABI scePthreadSelf();
 int APS5_VABI _sceLibcInternalThreadAtexit_nid_postfix(void (APS5_VABI* destructor)(void*), void* object, void* dsoSymbol);
 void APS5_VABI _sceLibcInternalThreadDtors_nid_postfix();
+int APS5_VABI gethostname_nid_postfix(char* name, std::size_t length);
 }
 
 namespace {
@@ -56,6 +59,17 @@ bool DestructorsThrow() {
 }
 
 int main() {
+    char host[8];
+    Require(gethostname_nid_postfix(host, sizeof(host)) == 0);
+    Require(std::string_view(host) == "PS5");
+    char shortHost[3];
+    Require(gethostname_nid_postfix(shortHost, sizeof(shortHost)) == 0);
+    Require(std::string_view(shortHost) == "PS");
+    char single[1] = {'x'};
+    Require(gethostname_nid_postfix(single, sizeof(single)) == 0);
+    Require(single[0] == '\0');
+    Require(gethostname_nid_postfix(host, 0) == -1);
+    Require(gethostname_nid_postfix(nullptr, sizeof(host)) == -1);
     const Pthread mainThread = scePthreadSelf();
     Require(Register(Record, 1) == 0);
     Require(Register(RecordAndRegister, 2) == 0);

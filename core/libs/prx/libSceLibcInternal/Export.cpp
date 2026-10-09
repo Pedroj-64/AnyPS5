@@ -104,6 +104,19 @@ extern "C" {
 
 int Need_sceLibcInternal_nid_postfix = 1;
 
+int APS5_VABI gethostname_nid_postfix(char* name, std::size_t length) {
+    constexpr char hostname[] = "PS5";
+    if (name == nullptr || length == 0)
+        return -1;
+    std::size_t copied = 0;
+    while (copied + 1 < length && hostname[copied] != '\0') {
+        name[copied] = hostname[copied];
+        ++copied;
+    }
+    name[copied] = '\0';
+    return 0;
+}
+
 void APS5_VABI __cxa_finalize_nid_postfix(void* dsoHandle) {
     CxaFinalize_nid_no_patch(dsoHandle);
 }
