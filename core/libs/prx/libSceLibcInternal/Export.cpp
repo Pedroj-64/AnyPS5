@@ -4,6 +4,7 @@
 #include "prx/libc/include/HostThreadLocal.hpp"
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -13,6 +14,7 @@
 #include <dlfcn.h>
 #endif
 
+extern "C" int* APS5_VABI __error_nid_postfix();
 extern "C" void APS5_VABI sceKernelSetThreadDtors(thread_dtors_func_t dtors);
 extern "C" int APS5_VABI sceKernelGetModuleInfoFromAddr(std::uint64_t address, int flags, ModuleInfoEx* info);
 
@@ -106,14 +108,14 @@ int Need_sceLibcInternal_nid_postfix = 1;
 
 int APS5_VABI gethostname_nid_postfix(char* name, std::size_t length) {
     constexpr char hostname[] = "PS5";
-    if (name == nullptr || length == 0)
+    constexpr int fileNameTooLong = 63;
+    if (name == nullptr)
         return -1;
-    std::size_t copied = 0;
-    while (copied + 1 < length && hostname[copied] != '\0') {
-        name[copied] = hostname[copied];
-        ++copied;
+    if (length < sizeof(hostname)) {
+        *__error_nid_postfix() = fileNameTooLong;
+        return -1;
     }
-    name[copied] = '\0';
+    std::memcpy(name, hostname, sizeof(hostname));
     return 0;
 }
 

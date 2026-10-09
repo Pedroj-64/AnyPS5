@@ -13,6 +13,7 @@ Pthread APS5_VABI scePthreadSelf();
 int APS5_VABI _sceLibcInternalThreadAtexit_nid_postfix(void (APS5_VABI* destructor)(void*), void* object, void* dsoSymbol);
 void APS5_VABI _sceLibcInternalThreadDtors_nid_postfix();
 int APS5_VABI gethostname_nid_postfix(char* name, std::size_t length);
+int* APS5_VABI __error_nid_postfix();
 }
 
 namespace {
@@ -62,13 +63,16 @@ int main() {
     char host[8];
     Require(gethostname_nid_postfix(host, sizeof(host)) == 0);
     Require(std::string_view(host) == "PS5");
+    char exact[4];
+    Require(gethostname_nid_postfix(exact, sizeof(exact)) == 0);
+    Require(std::string_view(exact) == "PS5");
+    *__error_nid_postfix() = 0;
     char shortHost[3];
-    Require(gethostname_nid_postfix(shortHost, sizeof(shortHost)) == 0);
-    Require(std::string_view(shortHost) == "PS");
-    char single[1] = {'x'};
-    Require(gethostname_nid_postfix(single, sizeof(single)) == 0);
-    Require(single[0] == '\0');
+    Require(gethostname_nid_postfix(shortHost, sizeof(shortHost)) == -1);
+    Require(*__error_nid_postfix() == 63);
+    *__error_nid_postfix() = 0;
     Require(gethostname_nid_postfix(host, 0) == -1);
+    Require(*__error_nid_postfix() == 63);
     Require(gethostname_nid_postfix(nullptr, sizeof(host)) == -1);
     const Pthread mainThread = scePthreadSelf();
     Require(Register(Record, 1) == 0);
